@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <Extern href="stdidcmd.h"/>
+  <Extern href="vsshlids.h"/>
+
+  <Commands package="guidAutoBuildEntityPkg">
+    <Groups>
+      <Group guid="guidAutoBuildEntityCmdSet" id="MyMenuGroup" priority="0x0600">
+        <Parent guid="guidCodeWindowRightClickCmdSet" id="CodeWindowRightClickMenu"/>
+      </Group>
+    </Groups>
+
+    <Buttons>
+      <Button guid="guidAutoBuildEntityCmdSet" id="AutoBuildEntityCommandId" priority="0x0100" type="Button">
+        <Parent guid="guidAutoBuildEntityCmdSet" id="MyMenuGroup" />
+        <Icon guid="guidImages" id="bmpPic1"  />
+        <Strings>
+          <ButtonText>自动生成实体工具</ButtonText>
+        </Strings>
+      </Button>
+    </Buttons>
+
+    <Bitmaps>
+      <Bitmap guid="guidImages" href="Resources\icon.png" usedList="bmpPic1"/>
+    </Bitmaps>
+  </Commands>
+
+  <Symbols>
+    <GuidSymbol name="guidAutoBuildEntityPkg" value="{c095f8f8-3f87-4eac-8dc0-44939a85b2f2}" />
+    <GuidSymbol name="guidAutoBuildEntityCmdSet" value="{cbe5d1f0-96e6-4ce2-90c5-860da753969c}">
+      <IDSymbol name="MyMenuGroup" value="0x1020" />
+      <IDSymbol name="AutoBuildEntityCommandId" value="0x0100" />
+    </GuidSymbol>
+    
+    <GuidSymbol name="guidCodeWindowRightClickCmdSet" value="{D309F791-903F-11D0-9EFC-00A0C911004F}">
+      <IDSymbol name="CodeWindowRightClickMenu" value="1026" />
+    </GuidSymbol>
+    
+    <GuidSymbol name="guidImages" value="{7f4f7d75-9cb7-4b31-87aa-1d3ce76bc3da}" >
+      <IDSymbol name="bmpPic1" value="1" />
+    </GuidSymbol>
+  </Symbols>
+
+</CommandTable>

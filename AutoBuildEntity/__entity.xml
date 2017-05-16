@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<AutoEntity>
+  <ConnString>
+    <![CDATA[
+    Data Source=CHENGONG-PC\SKYCHEN;Initial Catalog=Hangfire;Persist Security Info=True;User ID=sa;Password=123456789
+    ]]>
+  </ConnString>
+  <Template>
+    <![CDATA[
+/*
+ * 本文件由根据实体插件自动生成，请勿更改
+ * =========================== */
+
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+namespace $entity.ProjectName
+{
+    public class $entity.TableName
+    {
+#foreach($c in $entity.Columns)
+        
+        /// <summary>
+#if($c.Remark != "")
+        /// $c.Remark
+#else
+        /// $c.Name
+#end
+        /// </summary>    
+#if($c.IsKey)
+        [Key]
+#end     
+#if($c.IsIdentity)
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+#end    
+#if(!$c.IsNullable)
+        [Required] 
+#end  
+#if($c.CSharpType == "string" && $c.Length != -1)     
+#if($c.Type == "nvarchar")
+#set($l = $c.Length/2)
+        [StringLength($l)]
+#else
+        [CharacterLength($c.Length)]
+#end
+#end
+#if($c.Remark != "")
+        [Display(Name="$c.Remark")]
+#else
+        [Display(Name="$c.Name")]
+#end
+        public $c.CSharpType $c.Name{ get; set; }
+#end
+    }
+}
+]]>
+  </Template>
+</AutoEntity>
