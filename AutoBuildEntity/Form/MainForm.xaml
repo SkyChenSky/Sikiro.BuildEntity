@@ -74,7 +74,9 @@
                     <GroupBox Header="版权" HorizontalAlignment="Left" Margin="10,143,0,0" VerticalAlignment="Top" Height="128" Width="742">
                         <Label Content="此源码版权归作者所有，欢迎使用提出建议，但未经作者同意必须保留此段声明" HorizontalAlignment="Left" Margin="0,10,-2,0" VerticalAlignment="Top" Height="93" Width="732"/>
                     </GroupBox>
-                    <GroupBox Header="使用" HorizontalAlignment="Left" Margin="10,276,0,0" VerticalAlignment="Top" Height="128" Width="742"/>
+                    <GroupBox Header="使用" HorizontalAlignment="Left" Margin="10,276,0,0" VerticalAlignment="Top" Height="128" Width="742">
+                        <Label Content="__entity.xml为插件使用配置，请修改数据库连接，并把文件放到需要使用的项目下。点击项目右键-自动生成实体工具。&#xA;&#xA;相关博客文章：http://www.cnblogs.com/skychen1218/p/6848128.html" HorizontalAlignment="Left" Margin="0,0,-2,0" VerticalAlignment="Top" Height="102" Width="732"/>
+                    </GroupBox>
                 </Grid>
             </TabItem>
         </TabControl>
