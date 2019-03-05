@@ -9,7 +9,7 @@ visual studio 2013、2015、2017
 ## 怎么使用
 
 ### 效果图
-![img](https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=702257389,1274025419&fm=27&gp=0.jpg "效果图")
+![img](https://github.com/SkyChenSky/AutoBuildEntity/blob/master/AutoBuildEntity/Resources/entity.gif "效果图")
 
 ### 安装
 
