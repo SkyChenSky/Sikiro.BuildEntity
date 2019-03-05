@@ -24,6 +24,13 @@ namespace 陈珙.AutoBuildEntity.Form
         private readonly List<string> _noAddCheckSelectList = new List<string>();
 
         private readonly List<string> _noExistCheckSelectList = new List<string>();
+
+        private IEnumerable<ListViewItem> _noAddList;
+
+        private IEnumerable<ListViewItem> _hadAddList;
+
+        private IEnumerable<ListViewItem> _noExistList;
+
         public MainForm(AutoBuildEntityContent autoBuildEntityContent)
         {
             InitializeComponent();
@@ -35,24 +42,24 @@ namespace 陈珙.AutoBuildEntity.Form
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //加载列表
-            var noAddList =
+            _noAddList =
                 _autoBuildEntityContent.TablesName.Where(
                     a => !_autoBuildEntityContent.SelectedProject.CsFilesName.Contains(a))
                     .Select(a => new ListViewItem { Name = a });
 
-            var hadAddList =
+            _hadAddList =
                 _autoBuildEntityContent.TablesName.Where(
                     a => _autoBuildEntityContent.SelectedProject.CsFilesName.Contains(a))
                     .Select(a => new ListViewItem { Name = a });
 
-            var noExistList =
+            _noExistList =
                 _autoBuildEntityContent.SelectedProject.CsFilesName.Where(
                     a => !_autoBuildEntityContent.TablesName.Contains(a))
                     .Select(a => new ListViewItem { Name = a });
 
-            NoAddListView.ItemsSource = noAddList;
-            HadAddListView.ItemsSource = hadAddList;
-            NoExistListView.ItemsSource = noExistList;
+            NoAddListView.ItemsSource = _noAddList;
+            HadAddListView.ItemsSource = _hadAddList;
+            NoExistListView.ItemsSource = _noExistList;
         }
         #endregion
 
@@ -208,6 +215,28 @@ namespace 陈珙.AutoBuildEntity.Form
             }
         }
         #endregion
+
+        private void addedSearchBox_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+           FilterList(addedSearchBox, HadAddListView, _hadAddList);
+        }
+
+        private void unAddSearchBox_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            FilterList(unAddSearchBox, NoAddListView, _noAddList);
+        }
+
+        private void unExistSearchBox_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            FilterList(unExistSearchBox, NoExistListView, _noExistList);
+        }
+
+        private void FilterList(TextBox tb, ItemsControl clb, IEnumerable<ListViewItem> data)
+        {
+            var selectInput = tb.Text.ToLower();
+            var resultList = data.Where(a => a.Name.ToLower().StartsWith(selectInput));
+            clb.ItemsSource = resultList;
+        }
     }
 
     public class ListViewItem
