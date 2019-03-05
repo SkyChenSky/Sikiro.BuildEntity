@@ -5,7 +5,6 @@
         <DisplayName>AutoBuildEntity</DisplayName>
         <Description xml:space="preserve">自动生成实体工具</Description>
         <MoreInfo>https://github.com/SkyChenSky/AutoBuildEntity</MoreInfo>
-        <License>https://github.com/SkyChenSky/AutoBuildEntity/blob/master/LICENSE</License>
         <Icon>Resources\Package.ico</Icon>
         <PreviewImage>Resources\Package.ico</PreviewImage>
         <Tags>DataBase Entity </Tags>

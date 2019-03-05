@@ -213,6 +213,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\entity.gif" />
     <Content Include="Resources\Package.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
