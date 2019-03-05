@@ -1,205 +1,57 @@
-# Sikiro.DapperLambdaExtension.MsSql                                         [中文](https://github.com/SkyChenSky/Sikiro.DapperLambdaExtension.MsSql/blob/master/README.zh-cn.md)
-This is an lambda extension of dapper, Chain style makes developers more elegant and intuitive.
+# 实体生成插件
+基于visual studio sdk开发的方便、直观的实体生成工具。
 
-## Getting Started
 
-### Nuget
+## 支持版本
+visual studio 2013、2015、2017
 
-You can run the following command to install the Sikiro.DapperLambdaExtension.MsSql in your project。
 
+## 怎么使用
+
+### 效果图
+![img](https://github.com/SkyChenSky/AutoBuildEntity/blob/master/AutoBuildEntity/Resources/entity.gif "效果图")
+
+### 安装
+
+下载代码编译完成后，到bin目录下找到AutoBuildEntity.vsix双击安装
+
+### 模板配置
+
+配置文件命名约定为__entity.xml，可以参考源码目录下的文件《__entity.xml》。结构主要区分为数据库链接配置与实体模板配置，因为引入组件[NVelocity](https://github.com/castleproject/NVelocity/blob/master/docs/nvelocity.md)，如果需要对模板扩展可以查看具体文档。
+
+### 实体生成
+选中项目-右键-点击‘自动生成实体工具’-选择新增（更新、删除）数据源-确认。很简单、很直观
+
+
+## 可能遇到的问题
+
+### 无法调试
+选中项目-右键-属性-调试
+
+- 启动配置外部程序(按照你的VS版本选择)
 ```
-PM> Install-Package Sikiro.DapperLambdaExtension.MsSql
-```
-
-### SqlConnection
-
-```c#
-var con = new SqlConnection("Data Source=192.168.13.46;Initial Catalog=SkyChen;Persist Security Info=True;User ID=sa;Password=123456789");
-```
-
-### Defining User Entity
-```c#
-[Table("SYS_USER")]
-public class SysUser
-{
-    /// <summary>
-    /// 主键
-    /// </summary>    
-    [Key]
-    [Required]
-    [StringLength(32)]
-    [Display(Name = "主键")]
-    [Column("SYS_USERID")]
-    public string SysUserid { get; set; }
-
-    /// <summary>
-    /// 创建时间
-    /// </summary>    
-    [Required]
-    [Display(Name = "创建时间")]
-    [Column("CREATE_DATETIME")]
-    public DateTime CreateDatetime { get; set; }
-
-    /// <summary>
-    /// 邮箱
-    /// </summary>    
-    [Required]
-    [StringLength(32)]
-    [Display(Name = "邮箱")]
-    [Column("EMAIL")]
-    public string Email { get; set; }
-
-    /// <summary>
-    /// USER_STATUS
-    /// </summary>    
-    [Required]
-    [Display(Name = "USER_STATUS")]
-    [Column("USER_STATUS")]
-    public int UserStatus { get; set; }
-}
+C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.exe
 ```
 
-### Insert
-```c#
-con.CommandSet<SysUser>().Insert(new SysUser
-{
-    CreateDatetime = DateTime.Now,
-    Email = "287245177@qq.com",
-    SysUserid = Guid.NewGuid().ToString("N"),
-    UserName = "chengong",
-});
+- 命令行参数
 ```
-If not exists...insert...
-```c#
-con.CommandSet<SysUser>().IfNotExists(a => a.Email == "287245177@qq.com").Insert(new SysUser
-{
-    CreateDatetime = DateTime.Now,
-    Email = "287245177@qq.com",
-    SysUserid = Guid.NewGuid().ToString("N"),
-    UserName = "chengong",
-});
+/rootsuffix Exp
 ```
 
-### UPDATE
-Update according to the condition part field
-```c#
-con.CommandSet<SysUser>().Where(a => a.Email == "287245177@qq.com").Update(a => new SysUser { Email = "123456789@qq.com" });
-```
+### 制作icon
+http://iconfont.cn/search/index
 
-You can also update the entity field information based on the primary key 
-```c#
-User.Email = "123456789@qq.com";
-condb.CommandSet<SysUser>().Update(User);
-```
+http://www.easyicon.net/covert/
 
-### DELETE
-Delete according to the condition
+### visual studio sdk包下载
+http://www.microsoft.com/en-us/download/details.aspx?id=40758fa43d42b-25b5-4a42-fe9b-1634f450f5ee=True
 
-```c#
-con.CommandSet<SysUser>().Where(a => a.Email == "287245177@qq.com").Delete()
-```
+### 微软开发文档
+https://docs.microsoft.com/zh-cn/dotnet/api/envdte.dte?redirectedfrom=MSDN&view=visualstudiosdk-2017
 
-### QUERY
+### 项目博客地址
+http://www.cnblogs.com/skychen1218/p/6848128.html
 
-#### GET
-Get the first data by filtering condition
 
-```c#
-con.QuerySet<SysUser>().Where(a => a.Email == "287245177@qq.com").Get()
-```
-#### TOLIST
-You can also query qualified data list.
-```c#
-con.QuerySet<SysUser>().Where(a => a.Email == "287245177@qq.com").OrderBy(b => b.Email).Top(10).Select(a => a.Email).ToList();
-```
-### PAGELIST
-```c#
-con.QuerySet<SysUser>().Where(a => a.Email == "287245177@qq.com")
-                 .OrderBy(a => a.CreateDatetime)
-                 .Select(a => new SysUser { Email = a.Email, CreateDatetime = a.CreateDatetime, SysUserid = a.SysUserid })
-                 .PageList(1, 10);
-```
-### UPDATESELECT
-First update then select
-```c#
-con.QuerySet<SysUser>().Where(a => a.Email == "287245177@qq.com")
-                .OrderBy(a => a.CreateDatetime)
-                .Select(a => new SysUser { Email = a.Email })
-                .UpdateSelect(a => new SysUser { Email = "2530665632@qq.com" });
-```
-
-### ExpressionBuilder
-```c#
-var where = ExpressionBuilder.Init<SysUser>();
-
-if (string.IsNullOrWhiteSpace(param.Email))
-    where = where.And(a => a.Email == "287245177@qq.com");
-
-if (string.IsNullOrWhiteSpace(param.Mobile))
-    where = where.And(a => a.Mobile == "18988565556");
-
-con.QuerySet<SysUser>().Where(where).OrderBy(b => b.Email).Top(10).Select(a => a.Email).ToList();
-```
-
-### Like
-
-#### StartsWith
-```c#
-con.QuerySet<SysUser>().Where(a => a.Mobile.StartsWith("59332")).ToList();
-```
-#### EndWith
-```c#
-con.QuerySet<SysUser>().Where(a => a.Mobile.EndWith("59332")).ToList();
-```
-#### Contains
-```c#
-con.QuerySet<SysUser>().Where(a => a.Mobile.Contains("59332")).ToList();
-```
-
-### Transaction
-
-```c#
-con.Transaction(tc =>
-{
-    var sysUserid = tc.QuerySet<SysUser>().Where(a => a.Email == "287245177@qq.com").Select(a => a.SysUserid).Get();
-
-    tc.CommandSet<SysUser>().Where(a => a.SysUserid == sysUserid).Delete();
-
-    tc.CommandSet<SysUser>().Insert(new SysUser
-    {
-         CreateDatetime = DateTime.Now,
-         Email = "2530665632@qq.com",
-         SysUserid = Guid.NewGuid().ToString("N"),
-         UserName = "xiaobenzhen",
-    });
-});
-```
-
-### Finally a complete Demo
-
-```c#
-using (var con = new SqlConnection("Data Source=192.168.13.46;Initial Catalog=SkyChen;Persist Security Info=True;User ID=sa;Password=123456789"))
-{
-    con.CommandSet<SysUser>().Insert(new SysUser
-    {
-        CreateDatetime = DateTime.Now,
-        Email = "287245177@qq.com",
-        SysUserid = Guid.NewGuid().ToString("N"),
-        UserName = "chengong",
-    });
-
-    var model = con.QuerySet<SysUser>().Where(a => a.Email == "287245177@qq.com").Get();
-
-    con.CommandSet<SysUser>().Where(a => a.SysUserid == model.SysUserid)
-        .Update(a => new SysUser { Email = "2548987@qq.com" });
-
-    con.CommandSet<SysUser>().Where(a => a.SysUserid == model.SysUserid).Delete();
-}
-```
-
-### Others
-In addition to the above functions, there are aggregated queries.Such as Count、Sum、Exists
-
-## End
-If you have good suggestions, please feel free to mention to me.
-
+## 标签
+visual studio sdk vsix 插件 工具
