@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using 陈珙.AutoBuildEntity.Common.Helper;
 
 namespace 陈珙.AutoBuildEntity.Model
 {
@@ -14,6 +16,10 @@ namespace 陈珙.AutoBuildEntity.Model
             ProjectName = projectName;
         }
         public string TableName { get; private set; }
+
+        public string TableComment => (Columns.FirstOrDefault()?.TableComment) ?? "";
+
+        public string ClassName => TableName.ToCaseCamelName();
 
         public List<TableColumn> Columns { get; private set; }
 

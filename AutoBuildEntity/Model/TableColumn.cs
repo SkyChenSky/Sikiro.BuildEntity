@@ -24,7 +24,11 @@ namespace 陈珙.AutoBuildEntity.Model
 
         public string TableName { get; private set; }
 
+        public string TableComment { get; private set; }
+
         public string Name { get; private set; }
+
+        public string PropertyName => Name.ToCaseCamelName();
 
         public string Remark { get; private set; }
 
@@ -38,13 +42,7 @@ namespace 陈珙.AutoBuildEntity.Model
 
         public bool IsNullable { get; private set; }
 
-        public string CSharpType
-        {
-            get
-            {
-                return SqlHelper.MapCsharpType(Type, IsNullable);
-            }
-        }
+        public string CSharpType => SqlHelper.MapCsharpType(Type, IsNullable);
 
         /// <summary>
         /// 查询列信息
@@ -57,7 +55,7 @@ namespace 陈珙.AutoBuildEntity.Model
 
             var paramKey = string.Join(",", tablesName.Select((a, index) => "@p" + index));
             var paramVal = tablesName.Select((a, index) => new SqlParameter("@p" + index, a)).ToArray();
-            var sql = string.Format(@"SELECT  obj.name AS tablename ,
+            var sql = $@"SELECT  obj.name AS tablename ,
         col.name ,
         ISNULL(ep.[value], '') remark ,
         t.name AS type ,
@@ -88,7 +86,7 @@ FROM    dbo.syscolumns col
         LEFT  JOIN sys.extended_properties epTwo ON obj.id = epTwo.major_id
                                                     AND epTwo.minor_id = 0
                                                     AND epTwo.name = 'MS_Description'
-WHERE   obj.name IN ({0});", paramKey);
+WHERE   obj.name IN ({paramKey});";
 
             #endregion
 
@@ -105,6 +103,60 @@ WHERE   obj.name IN ({0});", paramKey);
                         Remark = row["remark"].ToString(),
                         TableName = row["tablename"].ToString(),
                         Type = row["type"].ToString()
+                    }).ToList();
+        }
+
+        public List<TableColumn> GetMySqlDbColumn(List<string> tablesName)
+        {
+            #region 表结构
+            var sql = $@"SELECT 
+    *,
+    (SELECT 
+            table_comment
+        FROM
+            information_schema.tables
+        WHERE
+            table_name = tablename
+        LIMIT 1) tableComment
+FROM
+    (SELECT 
+        TABLE_NAME tablename,
+            COLUMN_NAME name,
+            COLUMN_comment remark,
+            data_type type,
+            CASE
+                WHEN CHARACTER_MAXIMUM_LENGTH IS NULL THEN 0
+                ELSE CHARACTER_MAXIMUM_LENGTH
+            END length,
+            CASE
+                WHEN COLUMN_keY = 'PRI' THEN 1
+                ELSE 0
+            END iskey,
+            CASE
+                WHEN IS_NULLABLE = 'NO' THEN 0
+                ELSE 1
+            END isnullable,
+            0 isidentity
+    FROM
+        INFORMATION_SCHEMA.COLUMNS
+    WHERE
+        TABLE_NAME IN ('{string.Join("','", tablesName).TrimEnd(',')}')) t";
+            #endregion
+
+            var result = SqlHelper.MysqlQuery(_connStr, sql);
+
+            return (from DataRow row in result.Rows
+                    select new TableColumn
+                    {
+                        IsIdentity = Convert.ToBoolean(row["isidentity"]),
+                        IsKey = Convert.ToBoolean(row["iskey"]),
+                        IsNullable = Convert.ToBoolean(row["isnullable"]),
+                        Length = Convert.ToInt32(row["length"]),
+                        Name = row["name"].ToString(),
+                        Remark = row["remark"].ToString(),
+                        TableName = row["tablename"].ToString(),
+                        Type = row["type"].ToString(),
+                        TableComment = row["TableComment"].ToString(),
                     }).ToList();
         }
     }

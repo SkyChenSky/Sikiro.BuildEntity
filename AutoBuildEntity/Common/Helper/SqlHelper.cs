@@ -1,11 +1,19 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 
 namespace 陈珙.AutoBuildEntity.Common.Helper
 {
     public static class SqlHelper
     {
+        /// <summary>
+        /// mssql查询
+        /// </summary>
+        /// <param name="connStr"></param>
+        /// <param name="sql"></param>
+        /// <param name="sqlParameter"></param>
+        /// <returns></returns>
         public static DataTable Query(string connStr, string sql, SqlParameter[] sqlParameter = null)
         {
             var dt = new DataTable();
@@ -28,6 +36,37 @@ namespace 陈珙.AutoBuildEntity.Common.Helper
             return dt;
         }
 
+        /// <summary>
+        /// mysql查询
+        /// </summary>
+        /// <param name="connStr"></param>
+        /// <param name="sql"></param>
+        /// <returns></returns>
+        public static DataTable MysqlQuery(string connStr, string sql)
+        {
+            var dt = new DataTable();
+            using (var conn = new MySqlConnection(connStr))
+            {
+                conn.Open();
+
+                var cmd = conn.CreateCommand();
+
+                cmd.CommandText = sql;
+
+                var dr = cmd.ExecuteReader();
+
+                dt.Load(dr);
+            }
+
+            return dt;
+        }
+
+        /// <summary>
+        /// mysql类型映射
+        /// </summary>
+        /// <param name="dbtype"></param>
+        /// <param name="isNullable"></param>
+        /// <returns></returns>
         public static string MapCsharpType(string dbtype, bool isNullable)
         {
             if (string.IsNullOrEmpty(dbtype)) return dbtype;
@@ -71,6 +110,11 @@ namespace 陈珙.AutoBuildEntity.Common.Helper
             return csharpType;
         }
 
+        /// <summary>
+        /// mssql类型映射
+        /// </summary>
+        /// <param name="dbtype"></param>
+        /// <returns></returns>
         public static Type MapCommonType(string dbtype)
         {
             if (string.IsNullOrEmpty(dbtype)) return Type.Missing.GetType();

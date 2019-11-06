@@ -29,12 +29,28 @@ namespace 陈珙.AutoBuildEntity.Model
             Columns = columns;
         }
 
+        /// <summary>
+        /// 查询msql物理表和视图
+        /// </summary>
+        /// <returns></returns>
         public List<string> QueryTablesName()
         {
             var result = SqlHelper.Query(_conn, @"SELECT  name FROM    sysobjects WHERE  xtype IN ( 'u','v' ); ");
 
             return (from DataRow row in result.Rows select row[0].ToString()).ToList();
         }
+
+        /// <summary>
+        /// 查询mysql物理表
+        /// </summary>
+        /// <returns></returns>
+        public List<string> QueryMysqlTablesName()
+        {
+            var result = SqlHelper.MysqlQuery(_conn, @"show tables; ");
+
+            return (from DataRow row in result.Rows select row[0].ToString()).ToList();
+        }
+
 
         public List<DbTable> GetTables(List<string> tablesName)
         {
@@ -43,8 +59,8 @@ namespace 陈珙.AutoBuildEntity.Model
 
             var t = new TableColumn(_conn);
 
-            var columns = t.QueryColumn(tablesName);
-
+            var columns = t.GetMySqlDbColumn(tablesName);
+ 
             return columns.GroupBy(a => a.TableName).Select(a => new DbTable(a.Key, a.ToList())).ToList();
         }
 

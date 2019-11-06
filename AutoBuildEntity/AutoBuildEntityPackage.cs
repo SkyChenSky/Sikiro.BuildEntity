@@ -92,7 +92,7 @@ namespace 陈珙.AutoBuildEntity
         {
             var dbTable = new DbTable(sqlstr);
 
-            return dbTable.QueryTablesName();
+            return dbTable.QueryMysqlTablesName();
         }
     }
 }
