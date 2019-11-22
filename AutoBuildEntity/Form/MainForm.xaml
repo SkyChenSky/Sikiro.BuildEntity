@@ -20,7 +20,7 @@
                                     <GridViewColumn>
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <CheckBox HorizontalAlignment="Center" Click="TemplateHadAddCheckBox_ClickEvent" Tag="{Binding Path= Name}" />
+                                                <CheckBox HorizontalAlignment="Center" Click="TemplateHadAddCheckBox_ClickEvent" Tag="{Binding Path= Name}" IsChecked="{Binding IsChecked}" />
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                         <CheckBox x:Name="HadCheckSelectAll" HorizontalAlignment="Center" VerticalAlignment="Center" Click="HadAddSelectAll_ClickEvent" />
@@ -37,7 +37,7 @@
                                     <GridViewColumn>
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <CheckBox HorizontalAlignment="Center" Click="TemplateNoAddCheckBox_ClickEvent" Tag="{Binding Path= Name}" />
+                                                <CheckBox HorizontalAlignment="Center" Click="TemplateNoAddCheckBox_ClickEvent" Tag="{Binding Path= Name}" IsChecked="{Binding IsChecked}" />
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                         <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" Click="NoAddSelectAll_ClickEvent" />
@@ -55,7 +55,7 @@
                                         <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" Click="NoExistSelectAll_ClickEvent"  />
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <CheckBox HorizontalAlignment="Center" Click="TemplateNoExistCheckBox_ClickEvent" Tag="{Binding Path= Name}" ></CheckBox>
+                                                <CheckBox HorizontalAlignment="Center" Click="TemplateNoExistCheckBox_ClickEvent" Tag="{Binding Path= Name}" IsChecked="{Binding IsChecked}" ></CheckBox>
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>

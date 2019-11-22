@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -42,18 +43,18 @@ namespace 陈珙.AutoBuildEntity.Form
             _noAddList =
                 _autoBuildEntityContent.TablesName.Where(
                     a => !_autoBuildEntityContent.SelectedProject.CsFilesName.Contains(a.ToCaseCamelName()))
-                    .Select(a => new ListViewItem { Name = a });
+                    .Select(a => new ListViewItem(a)).ToList();
 
             _hadAddList =
                 _autoBuildEntityContent.TablesName.Where(
                     a => _autoBuildEntityContent.SelectedProject.CsFilesName.Contains(a.ToCaseCamelName()))
-                    .Select(a => new ListViewItem { Name = a });
+                    .Select(a => new ListViewItem(a)).ToList();
 
             var classList = _autoBuildEntityContent.TablesName.Select(a => a.ToCaseCamelName()).ToList();
             _noExistList =
                 _autoBuildEntityContent.SelectedProject.CsFilesName.Where(
                     a => !classList.Contains(a))
-                    .Select(a => new ListViewItem { Name = a });
+                    .Select(a => new ListViewItem(a)).ToList();
 
             NoAddListView.ItemsSource = _noAddList;
             HadAddListView.ItemsSource = _hadAddList;
@@ -118,63 +119,40 @@ namespace 陈珙.AutoBuildEntity.Form
         private void HadAddSelectAll_ClickEvent(object sender, RoutedEventArgs e)
         {
             var cb = sender as CheckBox;
-            var checkBoxList = FindVisualChild<CheckBox>(HadAddListView);
-            checkBoxList.ForEach(item =>
+
+            var hlv = (List<ListViewItem>)HadAddListView.ItemsSource;
+            hlv.ForEach(item =>
             {
-                item.IsChecked = cb.IsChecked;
+                item.IsChecked = cb?.IsChecked ?? false;
             });
 
-            var contentList = checkBoxList.Select(a => a.Tag?.ToString()).Where(a => !string.IsNullOrEmpty(a)).ToList();
-            _hadAddCheckSelectList = contentList;
+            _hadAddCheckSelectList = hlv.Where(a => !string.IsNullOrEmpty(a.Name) && a.IsChecked).Select(a => a.Name?.ToString()).ToList();
         }
 
         private void NoAddSelectAll_ClickEvent(object sender, RoutedEventArgs e)
         {
             var cb = sender as CheckBox;
-            var checkBoxList = FindVisualChild<CheckBox>(NoAddListView);
-            checkBoxList.ForEach(item =>
+
+            var hlv = (List<ListViewItem>)NoAddListView.ItemsSource;
+            hlv.ForEach(item =>
             {
-                item.IsChecked = cb.IsChecked;
+                item.IsChecked = cb?.IsChecked ?? false;
             });
 
-            var contentList = checkBoxList.Select(a => a.Tag?.ToString()).Where(a => !string.IsNullOrEmpty(a)).ToList();
-            _noAddCheckSelectList = contentList;
+            _noAddCheckSelectList = hlv.Where(a => !string.IsNullOrEmpty(a.Name) && a.IsChecked).Select(a => a.Name?.ToString()).ToList();
         }
 
         private void NoExistSelectAll_ClickEvent(object sender, RoutedEventArgs e)
         {
             var cb = sender as CheckBox;
-            var checkBoxList = FindVisualChild<CheckBox>(NoExistListView);
-            checkBoxList.ForEach(item =>
+
+            var hlv = (List<ListViewItem>)NoExistListView.ItemsSource;
+            hlv.ForEach(item =>
             {
-                item.IsChecked = cb.IsChecked;
+                item.IsChecked = cb?.IsChecked ?? false;
             });
 
-            var contentList = checkBoxList.Select(a => a.Tag?.ToString()).Where(a => !string.IsNullOrEmpty(a)).ToList();
-            _noExistCheckSelectList = contentList;
-        }
-
-        private List<T> FindVisualChild<T>(DependencyObject obj) where T : DependencyObject
-        {
-            var list = new List<T>();
-            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
-            {
-                var child = VisualTreeHelper.GetChild(obj, i);
-                var item = child as T;
-                if (item != null)
-                {
-                    list.Add(item);
-                }
-                else
-                {
-                    var childOfChildren = FindVisualChild<T>(child);
-                    if (childOfChildren != null)
-                    {
-                        list.AddRange(childOfChildren);
-                    }
-                }
-            }
-            return list;
+            _noExistCheckSelectList = hlv.Where(a => !string.IsNullOrEmpty(a.Name) && a.IsChecked).Select(a => a.Name?.ToString()).ToList();
         }
         #endregion
 
@@ -243,12 +221,50 @@ namespace 陈珙.AutoBuildEntity.Form
             var selectInput = tb.Text.ToLower();
             var resultList = data.Where(a => a.Name.ToLower().StartsWith(selectInput));
             clb.ItemsSource = resultList;
-        } 
+        }
         #endregion
     }
 
-    public class ListViewItem
+
+    public class ListViewItem : INotifyPropertyChanged
     {
-        public string Name { get; set; }
+        private bool _isChecked;
+        private string _name;
+
+        public bool IsChecked
+        {
+            get => _isChecked;
+            set
+            {
+                if (_isChecked == value) return;
+                _isChecked = value;
+                RaisePropertyChanged("IsChecked");
+            }
+        }
+
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                if (_name == value) return;
+                _name = value;
+                RaisePropertyChanged("Name");
+            }
+        }
+
+        public ListViewItem(string name)
+        {
+            Name = name;
+            IsChecked = false;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void RaisePropertyChanged(string propName)
+        {
+            var eh = PropertyChanged;
+            eh?.Invoke(this, new PropertyChangedEventArgs(propName));
+        }
     }
 }
