@@ -5,6 +5,7 @@
 |时间|内容|
 | ------- | ------| 
 |2019.11.6|修复批量更新与添加、更新后项目自动重新加载文件、mysql数据库的映射|
+|2020.1.8|通过配置文件区分mssql和mysql|
 
 ## 支持版本
 visual studio 2013、2015、2017
@@ -13,7 +14,7 @@ visual studio 2013、2015、2017
 ## 怎么使用
 
 ### 效果图
-![img](https://github.com/SkyChenSky/AutoBuildEntity/blob/master/AutoBuildEntity/Resources/entity.gif "效果图")
+![img](https://github.com/SkyChenSky/Sikiro.BuildEntity/blob/master/AutoBuildEntity/Resources/entity.gif "效果图")
 
 ### 安装
 
