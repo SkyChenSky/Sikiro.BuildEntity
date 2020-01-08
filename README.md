@@ -13,7 +13,7 @@ visual studio 2013、2015、2017
 ## 怎么使用
 
 ### 效果图
-![img](https://github.com/SkyChenSky/AutoBuildEntity/blob/master/AutoBuildEntity/Resources/entity.gif "效果图")
+![img](https://github.com/SkyChenSky/Sikiro.BuildEntity/blob/master/AutoBuildEntity/Resources/entity.gif "效果图")
 
 ### 安装
 
