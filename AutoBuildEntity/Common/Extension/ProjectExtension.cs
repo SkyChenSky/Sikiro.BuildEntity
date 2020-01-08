@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -47,6 +48,9 @@ namespace 陈珙.AutoBuildEntity.Common.Extension
             {
                 projectDte.ProjectItems.AddFromFile(file);
             }
+
+            //if (files.Any())
+            //    projectDte.Save();
         }
 
         /// <summary>
@@ -60,6 +64,9 @@ namespace 陈珙.AutoBuildEntity.Common.Extension
             {
                 projectDte.ProjectItems.Item(Path.GetFileName(file)).Remove();
             }
+
+            //if (files.Any())
+            //    projectDte.Save();
         }
 
         /// <summary>
@@ -70,6 +77,7 @@ namespace 陈珙.AutoBuildEntity.Common.Extension
         public static void ShowMessageBox(this IVsUIShell uiShell, string msg)
         {
             var clsid = Guid.Empty;
+            int result;
             ErrorHandler.ThrowOnFailure(uiShell.ShowMessageBox(
                        0,
                        ref clsid,
@@ -81,7 +89,7 @@ namespace 陈珙.AutoBuildEntity.Common.Extension
                        OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST,
                        OLEMSGICON.OLEMSGICON_INFO,
                        0,
-                       out _));
+                       out result));
         }
     }
 }

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using 陈珙.AutoBuildEntity.Common.Helper;
 
@@ -12,7 +10,7 @@ namespace 陈珙.AutoBuildEntity.Model
     /// </summary>
     public class DbTable
     {
-        public string TableName { get; private set; }
+        public string TableName { get; }
 
         public List<TableColumn> Columns { get; set; }
 
@@ -29,21 +27,13 @@ namespace 陈珙.AutoBuildEntity.Model
             Columns = columns;
         }
 
-        /// <summary>
-        /// 查询msql物理表和视图
-        /// </summary>
-        /// <returns></returns>
-        public List<string> QueryTablesName()
+        public List<string> QueryMssqlTablesName()
         {
-            var result = SqlHelper.Query(_conn, @"SELECT  name FROM    sysobjects WHERE  xtype IN ( 'u','v' ); ");
+            var result = SqlHelper.MssqlQuery(_conn, @"SELECT  name FROM    sysobjects WHERE  xtype IN ( 'u','v' ); ");
 
             return (from DataRow row in result.Rows select row[0].ToString()).ToList();
         }
 
-        /// <summary>
-        /// 查询mysql物理表
-        /// </summary>
-        /// <returns></returns>
         public List<string> QueryMysqlTablesName()
         {
             var result = SqlHelper.MysqlQuery(_conn, @"show tables; ");
@@ -52,15 +42,15 @@ namespace 陈珙.AutoBuildEntity.Model
         }
 
 
-        public List<DbTable> GetTables(List<string> tablesName)
+        public List<DbTable> GetTables(List<string> tablesName, string sqlType)
         {
             if (!tablesName.Any())
                 return new List<DbTable>();
 
-            var t = new TableColumn(_conn);
+            var t = new TableColumn(_conn, sqlType);
 
-            var columns = t.GetMySqlDbColumn(tablesName);
- 
+            var columns = t.GetColumn(tablesName);
+
             return columns.GroupBy(a => a.TableName).Select(a => new DbTable(a.Key, a.ToList())).ToList();
         }
 

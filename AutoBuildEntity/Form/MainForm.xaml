@@ -13,7 +13,6 @@
         <TabControl Grid.ColumnSpan="5" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="500" Width="772">
             <TabItem Header="数据源" Width="80" Height="28" FontSize="13">
                 <Grid Background="#FFE5E5E5">
-                    <TextBox x:Name="addedSearchBox" HorizontalAlignment="Left" Height="25" Margin="26,37,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="218" KeyUp="addedSearchBox_KeyUp"/>
                     <GroupBox Header="已添加的物理表（更新）" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="407" Width="240">
                         <ListView x:Name="HadAddListView" HorizontalAlignment="Left" Height="333" VerticalAlignment="Top" Width="220" Margin="10,39,-2,0" HorizontalContentAlignment="Right" >
                             <ListView.View>
@@ -21,7 +20,7 @@
                                     <GridViewColumn>
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <CheckBox HorizontalAlignment="Center" Click="TemplateHadAddCheckBox_ClickEvent" Tag="{Binding Path= Name}" IsChecked="{Binding IsChecked}" />
+                                                <CheckBox HorizontalAlignment="Center" Click="TemplateHadAddCheckBox_ClickEvent" Tag="{Binding Path= Name}" />
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                         <CheckBox x:Name="HadCheckSelectAll" HorizontalAlignment="Center" VerticalAlignment="Center" Click="HadAddSelectAll_ClickEvent" />
@@ -31,7 +30,6 @@
                             </ListView.View>
                         </ListView>
                     </GroupBox>
-                    <TextBox x:Name="unAddSearchBox" HorizontalAlignment="Left" Height="25" Margin="273,37,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="218" KeyUp="unAddSearchBox_KeyUp"/>
                     <GroupBox Header="未添加的物理表（添加）" HorizontalAlignment="Left" Margin="255,10,0,0" VerticalAlignment="Top" Height="407" Width="240">
                         <ListView x:Name="NoAddListView" HorizontalAlignment="Left" Height="333" VerticalAlignment="Top" Width="220" Margin="10,39,-2,0" HorizontalContentAlignment="Right" >
                             <ListView.View>
@@ -39,7 +37,7 @@
                                     <GridViewColumn>
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <CheckBox HorizontalAlignment="Center" Click="TemplateNoAddCheckBox_ClickEvent" Tag="{Binding Path= Name}" IsChecked="{Binding IsChecked}" />
+                                                <CheckBox HorizontalAlignment="Center" Click="TemplateNoAddCheckBox_ClickEvent" Tag="{Binding Path= Name}" />
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                         <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" Click="NoAddSelectAll_ClickEvent" />
@@ -49,7 +47,6 @@
                             </ListView.View>
                         </ListView>
                     </GroupBox>
-                    <TextBox x:Name="unExistSearchBox" HorizontalAlignment="Left" Height="25" Margin="516,37,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="218" KeyUp="unExistSearchBox_KeyUp"/>
                     <GroupBox Header="不存在的实体（删除）" HorizontalAlignment="Left" Margin="500,10,0,0" VerticalAlignment="Top" Height="407" Width="240">
                         <ListView x:Name="NoExistListView" HorizontalAlignment="Left" Height="333" VerticalAlignment="Top" Width="220" Margin="10,39,-2,0" HorizontalContentAlignment="Right">
                             <ListView.View>
@@ -58,7 +55,7 @@
                                         <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" Click="NoExistSelectAll_ClickEvent"  />
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <CheckBox HorizontalAlignment="Center" Click="TemplateNoExistCheckBox_ClickEvent" Tag="{Binding Path= Name}" IsChecked="{Binding IsChecked}" ></CheckBox>
+                                                <CheckBox HorizontalAlignment="Center" Click="TemplateNoExistCheckBox_ClickEvent" Tag="{Binding Path= Name}" ></CheckBox>
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
@@ -78,14 +75,15 @@
                     <GroupBox Header="版权" HorizontalAlignment="Left" Margin="10,143,0,0" VerticalAlignment="Top" Height="128" Width="742">
                         <Label Content="此源码版权归作者所有，欢迎使用提出建议，但未经作者同意必须保留此段声明" HorizontalAlignment="Left" Margin="0,10,-2,0" VerticalAlignment="Top" Height="93" Width="732"/>
                     </GroupBox>
-                    <GroupBox Header="使用" HorizontalAlignment="Left" Margin="10,276,0,0" VerticalAlignment="Top" Height="96" Width="742">
+                    <GroupBox Header="使用" HorizontalAlignment="Left" Margin="10,276,0,0" VerticalAlignment="Top" Height="128" Width="742">
                         <Label Content="__entity.xml为插件使用配置，请修改数据库连接，并把文件放到需要使用的项目下。点击项目右键-自动生成实体工具。&#xA;&#xA;相关博客文章：http://www.cnblogs.com/skychen1218/p/6848128.html" HorizontalAlignment="Left" Margin="0,0,-2,0" VerticalAlignment="Top" Height="102" Width="732"/>
-                    </GroupBox>
-                    <GroupBox Header="版本" HorizontalAlignment="Left" Margin="10,377,0,0" VerticalAlignment="Top" Height="82" Width="742">
-                        <Label Content="V1.4&#xA;" HorizontalAlignment="Left" Margin="0,0,-2,0" VerticalAlignment="Top" Height="56" Width="732"/>
                     </GroupBox>
                 </Grid>
             </TabItem>
         </TabControl>
+        <TextBox x:Name="addedSearchBox" HorizontalAlignment="Left" Height="25" Margin="40,79,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="218" Grid.ColumnSpan="3" KeyUp="addedSearchBox_KeyUp"/>
+        <TextBox x:Name="unAddSearchBox" HorizontalAlignment="Left" Height="25" Margin="54,79,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="218" Grid.ColumnSpan="3" Grid.Column="2" KeyUp="unAddSearchBox_KeyUp"/>
+        <TextBox x:Name="unExistSearchBox" HorizontalAlignment="Left" Height="25" Margin="23,79,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="218" Grid.Column="4" KeyUp="unExistSearchBox_KeyUp"/>
+
     </Grid>
 </Window>

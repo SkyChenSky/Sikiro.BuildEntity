@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -29,10 +28,13 @@ namespace 陈珙.AutoBuildEntity.Form
 
         private IEnumerable<ListViewItem> _noExistList;
 
-        public MainForm(AutoBuildEntityContent autoBuildEntityContent)
+        private readonly string _sqlType;
+
+        public MainForm(AutoBuildEntityContent autoBuildEntityContent, string sqlType)
         {
             InitializeComponent();
             _autoBuildEntityContent = autoBuildEntityContent;
+            _sqlType = sqlType;
         }
         #endregion
 
@@ -43,18 +45,18 @@ namespace 陈珙.AutoBuildEntity.Form
             _noAddList =
                 _autoBuildEntityContent.TablesName.Where(
                     a => !_autoBuildEntityContent.SelectedProject.CsFilesName.Contains(a.ToCaseCamelName()))
-                    .Select(a => new ListViewItem(a)).ToList();
+                    .Select(a => new ListViewItem { Name = a });
 
             _hadAddList =
                 _autoBuildEntityContent.TablesName.Where(
                     a => _autoBuildEntityContent.SelectedProject.CsFilesName.Contains(a.ToCaseCamelName()))
-                    .Select(a => new ListViewItem(a)).ToList();
+                    .Select(a => new ListViewItem { Name = a });
 
             var classList = _autoBuildEntityContent.TablesName.Select(a => a.ToCaseCamelName()).ToList();
             _noExistList =
                 _autoBuildEntityContent.SelectedProject.CsFilesName.Where(
                     a => !classList.Contains(a))
-                    .Select(a => new ListViewItem(a)).ToList();
+                    .Select(a => new ListViewItem { Name = a });
 
             NoAddListView.ItemsSource = _noAddList;
             HadAddListView.ItemsSource = _hadAddList;
@@ -79,7 +81,7 @@ namespace 陈珙.AutoBuildEntity.Form
 
                 //查询出表结构
                 var dbTable = new DbTable(_autoBuildEntityContent.EntityXml.ConnString);
-                var dbtables = dbTable.GetTables(addAndUpdateList);
+                var dbtables = dbTable.GetTables(addAndUpdateList, _sqlType);
 
                 //根据模版输出
                 var templateModel =
@@ -119,40 +121,63 @@ namespace 陈珙.AutoBuildEntity.Form
         private void HadAddSelectAll_ClickEvent(object sender, RoutedEventArgs e)
         {
             var cb = sender as CheckBox;
-
-            var hlv = (List<ListViewItem>)HadAddListView.ItemsSource;
-            hlv.ForEach(item =>
+            var checkBoxList = FindVisualChild<CheckBox>(HadAddListView);
+            checkBoxList.ForEach(item =>
             {
-                item.IsChecked = cb?.IsChecked ?? false;
+                item.IsChecked = cb.IsChecked;
             });
 
-            _hadAddCheckSelectList = hlv.Where(a => !string.IsNullOrEmpty(a.Name) && a.IsChecked).Select(a => a.Name?.ToString()).ToList();
+            var contentList = checkBoxList.Select(a => a.Tag?.ToString()).Where(a => !string.IsNullOrEmpty(a)).ToList();
+            _hadAddCheckSelectList = contentList;
         }
 
         private void NoAddSelectAll_ClickEvent(object sender, RoutedEventArgs e)
         {
             var cb = sender as CheckBox;
-
-            var hlv = (List<ListViewItem>)NoAddListView.ItemsSource;
-            hlv.ForEach(item =>
+            var checkBoxList = FindVisualChild<CheckBox>(NoAddListView);
+            checkBoxList.ForEach(item =>
             {
-                item.IsChecked = cb?.IsChecked ?? false;
+                item.IsChecked = cb.IsChecked;
             });
 
-            _noAddCheckSelectList = hlv.Where(a => !string.IsNullOrEmpty(a.Name) && a.IsChecked).Select(a => a.Name?.ToString()).ToList();
+            var contentList = checkBoxList.Select(a => a.Tag?.ToString()).Where(a => !string.IsNullOrEmpty(a)).ToList();
+            _noAddCheckSelectList = contentList;
         }
 
         private void NoExistSelectAll_ClickEvent(object sender, RoutedEventArgs e)
         {
             var cb = sender as CheckBox;
-
-            var hlv = (List<ListViewItem>)NoExistListView.ItemsSource;
-            hlv.ForEach(item =>
+            var checkBoxList = FindVisualChild<CheckBox>(NoExistListView);
+            checkBoxList.ForEach(item =>
             {
-                item.IsChecked = cb?.IsChecked ?? false;
+                item.IsChecked = cb.IsChecked;
             });
 
-            _noExistCheckSelectList = hlv.Where(a => !string.IsNullOrEmpty(a.Name) && a.IsChecked).Select(a => a.Name?.ToString()).ToList();
+            var contentList = checkBoxList.Select(a => a.Tag?.ToString()).Where(a => !string.IsNullOrEmpty(a)).ToList();
+            _noExistCheckSelectList = contentList;
+        }
+
+        private List<T> FindVisualChild<T>(DependencyObject obj) where T : DependencyObject
+        {
+            var list = new List<T>();
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+            {
+                var child = VisualTreeHelper.GetChild(obj, i);
+                var item = child as T;
+                if (item != null)
+                {
+                    list.Add(item);
+                }
+                else
+                {
+                    var childOfChildren = FindVisualChild<T>(child);
+                    if (childOfChildren != null)
+                    {
+                        list.AddRange(childOfChildren);
+                    }
+                }
+            }
+            return list;
         }
         #endregion
 
@@ -200,7 +225,6 @@ namespace 陈珙.AutoBuildEntity.Form
         }
         #endregion
 
-        #region 搜索过滤
         private void addedSearchBox_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
         {
             FilterList(addedSearchBox, HadAddListView, _hadAddList);
@@ -222,49 +246,10 @@ namespace 陈珙.AutoBuildEntity.Form
             var resultList = data.Where(a => a.Name.ToLower().StartsWith(selectInput));
             clb.ItemsSource = resultList;
         }
-        #endregion
     }
 
-
-    public class ListViewItem : INotifyPropertyChanged
+    public class ListViewItem
     {
-        private bool _isChecked;
-        private string _name;
-
-        public bool IsChecked
-        {
-            get => _isChecked;
-            set
-            {
-                if (_isChecked == value) return;
-                _isChecked = value;
-                RaisePropertyChanged("IsChecked");
-            }
-        }
-
-        public string Name
-        {
-            get => _name;
-            set
-            {
-                if (_name == value) return;
-                _name = value;
-                RaisePropertyChanged("Name");
-            }
-        }
-
-        public ListViewItem(string name)
-        {
-            Name = name;
-            IsChecked = false;
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void RaisePropertyChanged(string propName)
-        {
-            var eh = PropertyChanged;
-            eh?.Invoke(this, new PropertyChangedEventArgs(propName));
-        }
+        public string Name { get; set; }
     }
 }

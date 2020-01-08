@@ -13,13 +13,15 @@ namespace 陈珙.AutoBuildEntity.Model
     public class TableColumn
     {
         private readonly string _connStr;
+        private readonly string _sqltype;
         public TableColumn()
         {
 
         }
-        public TableColumn(string connStr)
+        public TableColumn(string connStr, string sqltype)
         {
             _connStr = connStr;
+            _sqltype = sqltype;
         }
 
         public string TableName { get; private set; }
@@ -42,14 +44,29 @@ namespace 陈珙.AutoBuildEntity.Model
 
         public bool IsNullable { get; private set; }
 
-        public string CSharpType => SqlHelper.MapCsharpType(Type, IsNullable);
+        public string CSharpType => SqlHelper.MapMysqlToCsharpType(Type, IsNullable);
+
+        public List<TableColumn> GetColumn(List<string> tablesName)
+        {
+            List<TableColumn> list;
+            switch (_sqltype)
+            {
+                case "mysql":
+                    list = GetMySqlDbColumn(tablesName); break;
+                case "mssql":
+                    list = GetMssqlColumn(tablesName); break;
+                default: throw new Exception("无法识别");
+            }
+
+            return list;
+        }
 
         /// <summary>
         /// 查询列信息
         /// </summary>
         /// <param name="tablesName"></param>
         /// <returns></returns>
-        public List<TableColumn> QueryColumn(List<string> tablesName)
+        private List<TableColumn> GetMssqlColumn(List<string> tablesName)
         {
             #region 表结构
 
@@ -90,7 +107,7 @@ WHERE   obj.name IN ({paramKey});";
 
             #endregion
 
-            var result = SqlHelper.Query(_connStr, sql, paramVal);
+            var result = SqlHelper.MssqlQuery(_connStr, sql, paramVal);
 
             return (from DataRow row in result.Rows
                     select new TableColumn
@@ -106,7 +123,7 @@ WHERE   obj.name IN ({paramKey});";
                     }).ToList();
         }
 
-        public List<TableColumn> GetMySqlDbColumn(List<string> tablesName)
+        private List<TableColumn> GetMySqlDbColumn(List<string> tablesName)
         {
             #region 表结构
             var sql = $@"SELECT 
