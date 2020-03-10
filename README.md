@@ -13,6 +13,58 @@ visual studio 2013、2015、2017
 
 ## 怎么使用
 
+### 配置结构
+
+```xml
+<AutoEntity>
+  <ConnString>
+    <![CDATA[
+   Server=im.gshichina.com;Port=5002;Database=person_platform;Uid=ge;Pwd=shi2019
+    ]]>
+  </ConnString>
+  <Type>
+    mysql
+  </Type>
+  <Template>
+    <![CDATA[
+/*
+ * 本文件由根据实体插件自动生成，请勿更改
+ * =========================== */
+
+using System;
+using Chloe.Annotations;
+namespace $entity.ProjectName
+{
+    /// <summary>
+    /// $entity.TableComment
+    /// </summary>
+    [Table("$entity.TableName")]
+    public class $entity.ClassName
+    {
+#foreach($c in $entity.Columns)
+        
+        /// <summary>
+#if($c.Remark != "")
+        /// $c.Remark
+#else
+        /// $c.Name
+#end
+        /// </summary>
+#if($c.IsIdentity)
+        [AutoIncrement]
+#elseif($c.CSharpType == "int")
+        [NonAutoIncrementAttribute]
+#end    
+        [Column("$c.Name")]
+        public $c.CSharpType  $c.PropertyName{ get; set; }
+#end
+    }
+}
+]]>
+  </Template>
+</AutoEntity>
+```
+
 ### 效果图
 ![img](https://github.com/SkyChenSky/Sikiro.BuildEntity/blob/master/AutoBuildEntity/Resources/entity.gif "效果图")
 

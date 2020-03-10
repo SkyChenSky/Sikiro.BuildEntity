@@ -2,12 +2,9 @@
 <AutoEntity>
   <ConnString>
     <![CDATA[
-    Server=im.gshichina.com;Port=5002;Database=person_platform;Uid=ge;Pwd=shi2019
+    Data Source=CHENGONG-PC\SKYCHEN;Initial Catalog=Hangfire;Persist Security Info=True;User ID=sa;Password=123456789
     ]]>
   </ConnString>
-  <Type>
-    mssql
-  </Type>
   <Template>
     <![CDATA[
 /*
@@ -19,8 +16,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace $entity.ProjectName
 {
-    [Table("$entity.TableName")]
-    public class $entity.ClassName
+    public class $entity.TableName
     {
 #foreach($c in $entity.Columns)
         
@@ -30,28 +26,30 @@ namespace $entity.ProjectName
 #else
         /// $c.Name
 #end
-        /// </summary>
+        /// </summary>    
 #if($c.IsKey)
         [Key]
 #end     
 #if($c.IsIdentity)
-        [AutoIncrement]
-#elseif($c.CSharpType == "int")
-        [NonAutoIncrementAttribute]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 #end    
 #if(!$c.IsNullable)
         [Required] 
 #end  
-#if($c.CSharpType == "string" && $c.Length != -1)
- [StringLength($c.Length)]
+#if($c.CSharpType == "string" && $c.Length != -1)     
+#if($c.Type == "nvarchar")
+#set($l = $c.Length/2)
+        [StringLength($l)]
+#else
+        [CharacterLength($c.Length)]
+#end
 #end
 #if($c.Remark != "")
         [Display(Name="$c.Remark")]
 #else
         [Display(Name="$c.Name")]
 #end
-        [Column("$c.Name")]
-        public $c.CSharpType  $c.PropertyName{ get; set; }
+        public $c.CSharpType $c.Name{ get; set; }
 #end
     }
 }

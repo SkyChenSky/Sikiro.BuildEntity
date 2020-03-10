@@ -13,7 +13,7 @@
         <TabControl Grid.ColumnSpan="5" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="500" Width="772">
             <TabItem Header="数据源" Width="80" Height="28" FontSize="13">
                 <Grid Background="#FFE5E5E5">
-                    <GroupBox Header="已添加的物理表（更新）" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="407" Width="240">
+                    <GroupBox Header="已添加的实体（更新）" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="407" Width="240">
                         <ListView x:Name="HadAddListView" HorizontalAlignment="Left" Height="333" VerticalAlignment="Top" Width="220" Margin="10,39,-2,0" HorizontalContentAlignment="Right" >
                             <ListView.View>
                                 <GridView>
@@ -30,7 +30,7 @@
                             </ListView.View>
                         </ListView>
                     </GroupBox>
-                    <GroupBox Header="未添加的物理表（添加）" HorizontalAlignment="Left" Margin="255,10,0,0" VerticalAlignment="Top" Height="407" Width="240">
+                    <GroupBox Header="未添加的实体（添加）" HorizontalAlignment="Left" Margin="255,10,0,0" VerticalAlignment="Top" Height="407" Width="240">
                         <ListView x:Name="NoAddListView" HorizontalAlignment="Left" Height="333" VerticalAlignment="Top" Width="220" Margin="10,39,-2,0" HorizontalContentAlignment="Right" >
                             <ListView.View>
                                 <GridView>

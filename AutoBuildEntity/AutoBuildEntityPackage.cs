@@ -58,15 +58,15 @@ namespace 陈珙.AutoBuildEntity
             try
             {
                 //读取表集合
-                autoBuildEntityContent.TablesName = GetTables(entityXmlModel.ConnString, entityXmlModel.Type);
+                autoBuildEntityContent.TablesName = GetTables(entityXmlModel.ConnString);
             }
             catch (Exception ex)
             {
-                uiShell.ShowMessageBox($"数据库访问异常:{ex.Message}");
+                uiShell.ShowMessageBox(string.Format("数据库访问异常:{0}", ex.Message));
                 return;
             }
 
-            new MainForm(autoBuildEntityContent, entityXmlModel.Type).ShowDialog();
+            new MainForm(autoBuildEntityContent).ShowDialog();
         }
 
         /// <summary>
@@ -88,18 +88,11 @@ namespace 陈珙.AutoBuildEntity
         /// </summary>
         /// <param name="sqlstr"></param>
         /// <returns></returns>
-        private List<string> GetTables(string sqlstr, string sqlType)
+        private List<string> GetTables(string sqlstr)
         {
             var dbTable = new DbTable(sqlstr);
 
-            switch (sqlType)
-            {
-                case "mysql":
-                    return dbTable.QueryMysqlTablesName();
-                case "mssql":
-                    return dbTable.QueryMssqlTablesName();
-                default: throw new Exception("未知类型");
-            }
+            return dbTable.QueryTablesName();
         }
     }
 }

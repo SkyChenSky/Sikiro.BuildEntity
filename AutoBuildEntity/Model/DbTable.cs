@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using 陈珙.AutoBuildEntity.Common.Helper;
 
@@ -10,7 +12,7 @@ namespace 陈珙.AutoBuildEntity.Model
     /// </summary>
     public class DbTable
     {
-        public string TableName { get; }
+        public string TableName { get; private set; }
 
         public List<TableColumn> Columns { get; set; }
 
@@ -27,29 +29,21 @@ namespace 陈珙.AutoBuildEntity.Model
             Columns = columns;
         }
 
-        public List<string> QueryMssqlTablesName()
+        public List<string> QueryTablesName()
         {
-            var result = SqlHelper.MssqlQuery(_conn, @"SELECT  name FROM    sysobjects WHERE  xtype IN ( 'u','v' ); ");
+            var result = SqlHelper.Query(_conn, @"SELECT  name FROM    sysobjects WHERE  xtype IN ( 'u','v' ); ");
 
             return (from DataRow row in result.Rows select row[0].ToString()).ToList();
         }
 
-        public List<string> QueryMysqlTablesName()
-        {
-            var result = SqlHelper.MysqlQuery(_conn, @"show tables; ");
-
-            return (from DataRow row in result.Rows select row[0].ToString()).ToList();
-        }
-
-
-        public List<DbTable> GetTables(List<string> tablesName, string sqlType)
+        public List<DbTable> GetTables(List<string> tablesName)
         {
             if (!tablesName.Any())
                 return new List<DbTable>();
 
-            var t = new TableColumn(_conn, sqlType);
+            var t = new TableColumn(_conn);
 
-            var columns = t.GetColumn(tablesName);
+            var columns = t.QueryColumn(tablesName);
 
             return columns.GroupBy(a => a.TableName).Select(a => new DbTable(a.Key, a.ToList())).ToList();
         }

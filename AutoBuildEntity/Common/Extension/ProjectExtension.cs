@@ -49,8 +49,8 @@ namespace 陈珙.AutoBuildEntity.Common.Extension
                 projectDte.ProjectItems.AddFromFile(file);
             }
 
-            //if (files.Any())
-            //    projectDte.Save();
+            if (files.Any())
+                projectDte.Save();
         }
 
         /// <summary>
@@ -65,8 +65,8 @@ namespace 陈珙.AutoBuildEntity.Common.Extension
                 projectDte.ProjectItems.Item(Path.GetFileName(file)).Remove();
             }
 
-            //if (files.Any())
-            //    projectDte.Save();
+            if (files.Any())
+                projectDte.Save();
         }
 
         /// <summary>
