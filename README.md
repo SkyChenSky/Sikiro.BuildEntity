@@ -67,7 +67,7 @@ namespace $entity.ProjectName
 ```
 
 ### 效果图
-![img](https://github.com/SkyChenSky/Sikiro.BuildEntity/blob/master/AutoBuildEntity/Resources/entity.gif "效果图")
+![img](https://img2020.cnblogs.com/blog/488722/202005/488722-20200524221612186-697876586.gif "效果图")
 
 ### 安装
 
