@@ -1,6 +1,9 @@
 # 实体生成插件
 基于visual studio sdk开发的方便、直观的实体生成工具。
 
+## 项目博客地址
+http://www.cnblogs.com/skychen1218/p/6848128.html
+
 ## 更新历史
 |时间|内容|
 | ------- | ------| 
@@ -66,6 +69,11 @@ namespace $entity.ProjectName
 </AutoEntity>
 ```
 
+|数据库名称|文件内使用|
+| ------- | ------| 
+|sql server|mssql|
+|mysql|mysql|
+
 ### 效果图
 ![img](https://img2020.cnblogs.com/blog/488722/202005/488722-20200524221612186-697876586.gif "效果图")
 
@@ -77,11 +85,14 @@ namespace $entity.ProjectName
 
 配置文件命名约定为__entity.xml，可以参考源码目录下的文件《__entity.xml》。结构主要区分为数据库链接配置与实体模板配置，因为引入组件[NVelocity](https://github.com/castleproject/NVelocity/blob/master/docs/nvelocity.md)，如果需要对模板扩展可以查看具体文档。
 
-### 实体生成
-选中项目-右键-点击‘自动生成实体工具’-选择新增（更新、删除）数据源-确认。很简单、很直观
+### 实际使用
+先把上面的配置放到项目-选中项目-右键-点击‘自动生成实体工具’-选择新增（更新、删除）数据源-确认。很简单、很直观
 
 
 ## 可能遇到的问题
+
+### 查找VS的界面guid与cmdid
+在VS的【扩展与更新】搜索并安装Extensibility Tools，然后在vs【视图】-【 Enable VSIP Logging】点击并重启后，就可以用ctrl+shirt+右键点击需要查的界面，就可以弹出需要的信息，我测试过vs2017可用。
 
 ### 无法调试
 选中项目-右键-属性-调试
@@ -110,9 +121,6 @@ http://www.easyicon.net/covert/
 
 ### 微软开发文档
 https://docs.microsoft.com/zh-cn/dotnet/api/envdte.dte?redirectedfrom=MSDN&view=visualstudiosdk-2017
-
-### 项目博客地址
-http://www.cnblogs.com/skychen1218/p/6848128.html
 
 
 ## 标签
