@@ -2,7 +2,7 @@
 <AutoEntity>
   <ConnString>
     <![CDATA[
-  Server=im.gshichina.com;Port=5002;Database=business_platform;Uid=ge;Pwd=myit2    ]]>
+  Server=im.gshichina.com;Port=5002;Database=business_platform;Uid=ge;Pwd=myit2020    ]]>
   </ConnString>
   <Type>
     mysql
