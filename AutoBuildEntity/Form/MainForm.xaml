@@ -13,6 +13,8 @@
         <TabControl Grid.ColumnSpan="5" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="500" Width="772">
             <TabItem Header="数据源" Width="80" Height="28" FontSize="13">
                 <Grid Background="#FFE5E5E5">
+                    <TextBox x:Name="addedSearchBox" HorizontalAlignment="Left" Height="25" Margin="26,36,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="218" KeyUp="addedSearchBox_KeyUp"/>
+
                     <GroupBox Header="已添加的物理表（更新）" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="407" Width="240">
                         <ListView x:Name="HadAddListView" HorizontalAlignment="Left" Height="333" VerticalAlignment="Top" Width="220" Margin="10,39,-2,0" HorizontalContentAlignment="Right" >
                             <ListView.View>
@@ -30,6 +32,8 @@
                             </ListView.View>
                         </ListView>
                     </GroupBox>
+                    <TextBox x:Name="unAddSearchBox" HorizontalAlignment="Left" Height="25" Margin="272,36,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="218" KeyUp="unAddSearchBox_KeyUp"/>
+
                     <GroupBox Header="未添加的物理表（添加）" HorizontalAlignment="Left" Margin="255,10,0,0" VerticalAlignment="Top" Height="407" Width="240">
                         <ListView x:Name="NoAddListView" HorizontalAlignment="Left" Height="333" VerticalAlignment="Top" Width="220" Margin="10,39,-2,0" HorizontalContentAlignment="Right" >
                             <ListView.View>
@@ -47,6 +51,9 @@
                             </ListView.View>
                         </ListView>
                     </GroupBox>
+
+                    <TextBox x:Name="unExistSearchBox" HorizontalAlignment="Left" Height="25" Margin="516,36,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="218" KeyUp="unExistSearchBox_KeyUp"/>
+
                     <GroupBox Header="不存在的实体（删除）" HorizontalAlignment="Left" Margin="500,10,0,0" VerticalAlignment="Top" Height="407" Width="240">
                         <ListView x:Name="NoExistListView" HorizontalAlignment="Left" Height="333" VerticalAlignment="Top" Width="220" Margin="10,39,-2,0" HorizontalContentAlignment="Right">
                             <ListView.View>
@@ -81,9 +88,6 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <TextBox x:Name="addedSearchBox" HorizontalAlignment="Left" Height="25" Margin="40,79,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="218" Grid.ColumnSpan="3" KeyUp="addedSearchBox_KeyUp"/>
-        <TextBox x:Name="unAddSearchBox" HorizontalAlignment="Left" Height="25" Margin="54,79,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="218" Grid.ColumnSpan="3" Grid.Column="2" KeyUp="unAddSearchBox_KeyUp"/>
-        <TextBox x:Name="unExistSearchBox" HorizontalAlignment="Left" Height="25" Margin="23,79,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="218" Grid.Column="4" KeyUp="unExistSearchBox_KeyUp"/>
 
     </Grid>
 </Window>

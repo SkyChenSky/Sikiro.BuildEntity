@@ -101,14 +101,18 @@ namespace 陈珙.AutoBuildEntity.Form
                     var path = FilesHelper.WriteAndSave(theSelectedProject.ProjectDirectoryName,
                         templateData.Key, templateData.Value);
 
-                    if (_noAddCheckSelectList.Contains(templateData.Key))
+                    if (_noAddCheckSelectList.Select(a=>a.ToCaseCamelName()).Contains(templateData.Key))
                         theSelectedProject.ProjectDte.ProjectItems.AddFromFile(path);
                 }
 
                 //添加项目项和排除项目项
                 theSelectedProject.ProjectDte.RemoveFilesFromProject(removeFiles);
 
-                Close();
+                  Close();
+            }
+            catch (ArgumentException)
+            {
+                MessageBox.Show("您的选项在数据库里存在多个项目命名规范的表（视图）名");
             }
             catch (Exception ex)
             {
