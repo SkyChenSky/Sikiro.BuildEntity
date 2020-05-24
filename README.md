@@ -100,8 +100,12 @@ http://iconfont.cn/search/index
 
 http://www.easyicon.net/covert/
 
-### visual studio sdk包下载
-http://www.microsoft.com/en-us/download/details.aspx?id=40758fa43d42b-25b5-4a42-fe9b-1634f450f5ee=True
+### visual studio sdk包下载（如果你无法编译通过）
+- 小于2015版本
+   - https://marketplace.visualstudio.com/items?itemName=VisualStudioProductTeam.MicrosoftVisualStudio2013SDK
+- 大于2015版本
+   - 工具-获取工具和功能-勾选-Visual Studio 扩展开发
+
 
 ### 微软开发文档
 https://docs.microsoft.com/zh-cn/dotnet/api/envdte.dte?redirectedfrom=MSDN&view=visualstudiosdk-2017

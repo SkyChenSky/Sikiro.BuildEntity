@@ -13,24 +13,30 @@ namespace 陈珙.AutoBuildEntity.Model
     public class TableColumn
     {
         private readonly string _connStr;
+        private readonly string _sqltype;
         public TableColumn()
         {
 
         }
-        public TableColumn(string connStr)
+        public TableColumn(string connStr, string sqltype)
         {
             _connStr = connStr;
+            _sqltype = sqltype;
         }
 
         public string TableName { get; private set; }
 
+        public string TableComment { get; private set; }
+
         public string Name { get; private set; }
+
+        public string PropertyName => Name.ToCaseCamelName();
 
         public string Remark { get; private set; }
 
         public string Type { get; private set; }
 
-        public int Length { get; private set; }
+        public long Length { get; private set; }
 
         public bool IsIdentity { get; private set; }
 
@@ -38,12 +44,21 @@ namespace 陈珙.AutoBuildEntity.Model
 
         public bool IsNullable { get; private set; }
 
-        public string CSharpType
+        public string CSharpType => SqlHelper.MapMysqlToCsharpType(Type, IsNullable);
+
+        public List<TableColumn> GetColumn(List<string> tablesName)
         {
-            get
+            List<TableColumn> list;
+            switch (_sqltype)
             {
-                return SqlHelper.MapCsharpType(Type, IsNullable);
+                case "mysql":
+                    list = GetMySqlDbColumn(tablesName); break;
+                case "mssql":
+                    list = GetMssqlColumn(tablesName); break;
+                default: throw new Exception("无法识别");
             }
+
+            return list;
         }
 
         /// <summary>
@@ -51,13 +66,13 @@ namespace 陈珙.AutoBuildEntity.Model
         /// </summary>
         /// <param name="tablesName"></param>
         /// <returns></returns>
-        public List<TableColumn> QueryColumn(List<string> tablesName)
+        private List<TableColumn> GetMssqlColumn(List<string> tablesName)
         {
             #region 表结构
 
             var paramKey = string.Join(",", tablesName.Select((a, index) => "@p" + index));
             var paramVal = tablesName.Select((a, index) => new SqlParameter("@p" + index, a)).ToArray();
-            var sql = string.Format(@"SELECT  obj.name AS tablename ,
+            var sql = $@"SELECT  obj.name AS tablename ,
         col.name ,
         ISNULL(ep.[value], '') remark ,
         t.name AS type ,
@@ -88,11 +103,11 @@ FROM    dbo.syscolumns col
         LEFT  JOIN sys.extended_properties epTwo ON obj.id = epTwo.major_id
                                                     AND epTwo.minor_id = 0
                                                     AND epTwo.name = 'MS_Description'
-WHERE   obj.name IN ({0});", paramKey);
+WHERE   obj.name IN ({paramKey});";
 
             #endregion
 
-            var result = SqlHelper.Query(_connStr, sql, paramVal);
+            var result = SqlHelper.MssqlQuery(_connStr, sql, paramVal);
 
             return (from DataRow row in result.Rows
                     select new TableColumn
@@ -100,11 +115,65 @@ WHERE   obj.name IN ({0});", paramKey);
                         IsIdentity = Convert.ToBoolean(row["isidentity"]),
                         IsKey = Convert.ToBoolean(row["iskey"]),
                         IsNullable = Convert.ToBoolean(row["isnullable"]),
-                        Length = Convert.ToInt32(row["length"]),
+                        Length = Convert.ToInt64(row["length"]),
                         Name = row["name"].ToString(),
                         Remark = row["remark"].ToString(),
                         TableName = row["tablename"].ToString(),
                         Type = row["type"].ToString()
+                    }).ToList();
+        }
+
+        private List<TableColumn> GetMySqlDbColumn(List<string> tablesName)
+        {
+            #region 表结构
+            var sql = $@"SELECT 
+    *,
+    (SELECT 
+            table_comment
+        FROM
+            information_schema.tables
+        WHERE
+            table_name = tablename
+        LIMIT 1) tableComment
+FROM
+    (SELECT 
+        TABLE_NAME tablename,
+            COLUMN_NAME name,
+            COLUMN_comment remark,
+            data_type type,
+            CASE
+                WHEN CHARACTER_MAXIMUM_LENGTH IS NULL THEN 0
+                ELSE CHARACTER_MAXIMUM_LENGTH
+            END length,
+            CASE
+                WHEN COLUMN_keY = 'PRI' THEN 1
+                ELSE 0
+            END iskey,
+            CASE
+                WHEN IS_NULLABLE = 'NO' THEN 0
+                ELSE 1
+            END isnullable,
+            0 isidentity
+    FROM
+        INFORMATION_SCHEMA.COLUMNS
+    WHERE
+        TABLE_NAME IN ('{string.Join("','", tablesName).TrimEnd(',')}') AND Table_schema = '{SqlHelper.DataBase}') t";
+            #endregion
+
+            var result = SqlHelper.MysqlQuery(_connStr, sql);
+
+            return (from DataRow row in result.Rows
+                    select new TableColumn
+                    {
+                        IsIdentity = Convert.ToBoolean(row["isidentity"]),
+                        IsKey = Convert.ToBoolean(row["iskey"]),
+                        IsNullable = Convert.ToBoolean(row["isnullable"]),
+                        Length = Convert.ToInt64(row["length"]),
+                        Name = row["name"].ToString(),
+                        Remark = row["remark"].ToString(),
+                        TableName = row["tablename"].ToString(),
+                        Type = row["type"].ToString(),
+                        TableComment = row["TableComment"].ToString(),
                     }).ToList();
         }
     }

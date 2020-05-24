@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,11 +16,11 @@ namespace 陈珙.AutoBuildEntity.Form
         #region 窗体初始化
         private readonly AutoBuildEntityContent _autoBuildEntityContent;
 
-        private readonly List<string> _hadAddCheckSelectList = new List<string>();
+        private List<string> _hadAddCheckSelectList = new List<string>();
 
-        private readonly List<string> _noAddCheckSelectList = new List<string>();
+        private List<string> _noAddCheckSelectList = new List<string>();
 
-        private readonly List<string> _noExistCheckSelectList = new List<string>();
+        private List<string> _noExistCheckSelectList = new List<string>();
 
         private IEnumerable<ListViewItem> _noAddList;
 
@@ -31,10 +28,13 @@ namespace 陈珙.AutoBuildEntity.Form
 
         private IEnumerable<ListViewItem> _noExistList;
 
-        public MainForm(AutoBuildEntityContent autoBuildEntityContent)
+        private readonly string _sqlType;
+
+        public MainForm(AutoBuildEntityContent autoBuildEntityContent, string sqlType)
         {
             InitializeComponent();
             _autoBuildEntityContent = autoBuildEntityContent;
+            _sqlType = sqlType;
         }
         #endregion
 
@@ -44,17 +44,18 @@ namespace 陈珙.AutoBuildEntity.Form
             //加载列表
             _noAddList =
                 _autoBuildEntityContent.TablesName.Where(
-                    a => !_autoBuildEntityContent.SelectedProject.CsFilesName.Contains(a))
+                    a => !_autoBuildEntityContent.SelectedProject.CsFilesName.Contains(a.ToCaseCamelName()))
                     .Select(a => new ListViewItem { Name = a });
 
             _hadAddList =
                 _autoBuildEntityContent.TablesName.Where(
-                    a => _autoBuildEntityContent.SelectedProject.CsFilesName.Contains(a))
+                    a => _autoBuildEntityContent.SelectedProject.CsFilesName.Contains(a.ToCaseCamelName()))
                     .Select(a => new ListViewItem { Name = a });
 
+            var classList = _autoBuildEntityContent.TablesName.Select(a => a.ToCaseCamelName()).ToList();
             _noExistList =
                 _autoBuildEntityContent.SelectedProject.CsFilesName.Where(
-                    a => !_autoBuildEntityContent.TablesName.Contains(a))
+                    a => !classList.Contains(a))
                     .Select(a => new ListViewItem { Name = a });
 
             NoAddListView.ItemsSource = _noAddList;
@@ -76,11 +77,11 @@ namespace 陈珙.AutoBuildEntity.Form
             {
                 //获取物理表名
                 var addAndUpdateList = _hadAddCheckSelectList.Union(_noAddCheckSelectList).ToList();
-                var removeFiles = _noExistCheckSelectList.Select(a => a + ".cs").ToList();
+                var removeFiles = _noExistCheckSelectList.Select(a => a.ToCaseCamelName() + ".cs").ToList();
 
                 //查询出表结构
                 var dbTable = new DbTable(_autoBuildEntityContent.EntityXml.ConnString);
-                var dbtables = dbTable.GetTables(addAndUpdateList);
+                var dbtables = dbTable.GetTables(addAndUpdateList, _sqlType);
 
                 //根据模版输出
                 var templateModel =
@@ -89,20 +90,22 @@ namespace 陈珙.AutoBuildEntity.Form
                             new TemplateModel(a.TableName, a.Columns,
                                 theSelectedProject.ProjectName)).ToList();
 
-                var templateDic = templateModel.ToDictionary(a => a.TableName,
+                var templateDic = templateModel.ToDictionary(a => a.ClassName,
                     item =>
                         NVelocityHelper.ProcessTemplate(_autoBuildEntityContent.EntityXml.EntityTemplate,
                             new Dictionary<string, object> { { "entity", item } }));
 
                 //保存文件
-                var addfiles =
-                    templateDic.Select(
-                        templateData =>
-                            FilesHelper.Write(theSelectedProject.ProjectDirectoryName,
-                                templateData.Key, templateData.Value)).ToList();
+                foreach (var templateData in templateDic)
+                {
+                    var path = FilesHelper.WriteAndSave(theSelectedProject.ProjectDirectoryName,
+                        templateData.Key, templateData.Value);
 
-                //添加项目项和排除项目项、
-                theSelectedProject.ProjectDte.AddFilesToProject(addfiles);
+                    if (_noAddCheckSelectList.Contains(templateData.Key))
+                        theSelectedProject.ProjectDte.ProjectItems.AddFromFile(path);
+                }
+
+                //添加项目项和排除项目项
                 theSelectedProject.ProjectDte.RemoveFilesFromProject(removeFiles);
 
                 Close();
@@ -124,6 +127,8 @@ namespace 陈珙.AutoBuildEntity.Form
                 item.IsChecked = cb.IsChecked;
             });
 
+            var contentList = checkBoxList.Select(a => a.Tag?.ToString()).Where(a => !string.IsNullOrEmpty(a)).ToList();
+            _hadAddCheckSelectList = contentList;
         }
 
         private void NoAddSelectAll_ClickEvent(object sender, RoutedEventArgs e)
@@ -135,6 +140,8 @@ namespace 陈珙.AutoBuildEntity.Form
                 item.IsChecked = cb.IsChecked;
             });
 
+            var contentList = checkBoxList.Select(a => a.Tag?.ToString()).Where(a => !string.IsNullOrEmpty(a)).ToList();
+            _noAddCheckSelectList = contentList;
         }
 
         private void NoExistSelectAll_ClickEvent(object sender, RoutedEventArgs e)
@@ -146,11 +153,13 @@ namespace 陈珙.AutoBuildEntity.Form
                 item.IsChecked = cb.IsChecked;
             });
 
+            var contentList = checkBoxList.Select(a => a.Tag?.ToString()).Where(a => !string.IsNullOrEmpty(a)).ToList();
+            _noExistCheckSelectList = contentList;
         }
 
         private List<T> FindVisualChild<T>(DependencyObject obj) where T : DependencyObject
         {
-            List<T> list = new List<T>();
+            var list = new List<T>();
             for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
             {
                 var child = VisualTreeHelper.GetChild(obj, i);
@@ -218,7 +227,7 @@ namespace 陈珙.AutoBuildEntity.Form
 
         private void addedSearchBox_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
         {
-           FilterList(addedSearchBox, HadAddListView, _hadAddList);
+            FilterList(addedSearchBox, HadAddListView, _hadAddList);
         }
 
         private void unAddSearchBox_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
