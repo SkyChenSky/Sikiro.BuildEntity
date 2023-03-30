@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using EnvDTE;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using 陈珙.AutoBuildEntity.Model;
 
@@ -19,7 +19,7 @@ namespace 陈珙.AutoBuildEntity.Common.Extension
         /// <returns></returns>
         public static SelectedProject GetSelectedProjectInfo(this DTE dte)
         {
-            var selectedItems = dte.SelectedItems;
+	        var selectedItems = dte.SelectedItems;
 
             var projectName = (from SelectedItem item in selectedItems select item.Name).ToList();
 

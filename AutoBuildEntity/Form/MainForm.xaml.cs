@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Microsoft.VisualStudio.Shell;
 using 陈珙.AutoBuildEntity.Common.Extension;
 using 陈珙.AutoBuildEntity.Common.Helper;
 using 陈珙.AutoBuildEntity.Model;
@@ -73,7 +74,8 @@ namespace 陈珙.AutoBuildEntity.Form
         /// <param name="e"></param>
         private void SubmitEvent(object sender, RoutedEventArgs e)
         {
-            var theSelectedProject = _autoBuildEntityContent.SelectedProject;
+	        ThreadHelper.ThrowIfNotOnUIThread();
+			var theSelectedProject = _autoBuildEntityContent.SelectedProject;
             try
             {
                 //获取物理表名
