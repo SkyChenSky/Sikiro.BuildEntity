@@ -8,17 +8,20 @@ http://www.cnblogs.com/skychen1218/p/6848128.html
 |时间|内容|
 | ------- | ------| 
 |2019.11.6|修复批量更新与添加、更新后项目自动重新加载文件、mysql数据库的映射|
-|2020.1.8|通过配置文件区分mssql和mysql|
-|2020.5.24|修复引用问题、全选的问题、2019兼容问题|
+|2020.01.08|通过配置文件区分mssql和mysql|
+|2020.05.24|修复引用问题、全选的问题、2019兼容问题|
+|2023.12.01|支持visual studio 2022|
+|2024.07.03|支持生成SF.OM Controller、Service、View、Model|
 
 ## 支持版本
-visual studio 2013、2015、2017、2019
+visual studio 2013、2015、2017、2019、2022
 
 
 ## 怎么使用
 
 ### 配置结构
 
+#### Entity
 ```xml
 <AutoEntity>
   <ConnString>
